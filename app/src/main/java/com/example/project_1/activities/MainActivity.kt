@@ -1,8 +1,6 @@
 package com.example.project_1.Activities
 
-import PlayerFragment
-import TeamFragment
-import android.content.Intent
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem

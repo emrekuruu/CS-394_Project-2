@@ -1,8 +1,14 @@
+package com.example.project_1.activities.fragments
+
 import android.os.Bundle
+import android.text.Layout.Directions
 import android.view.*
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.project_1.R
@@ -12,7 +18,22 @@ import com.example.project_1.databinding.FragmentPlayersBinding
 import com.example.project_1.activities.model.Player
 import com.google.android.material.navigation.NavigationView
 
+
 class PlayerFragment : Fragment() {
+
+    private val _navigateToPlayerDetail = MutableLiveData<Player?>()
+
+    val navigateToPlayerDetail
+    get() = _navigateToPlayerDetail
+
+    fun onPlayerClicked(player : Player){
+        _navigateToPlayerDetail.value = player
+    }
+
+    fun doneNavigating(){
+        _navigateToPlayerDetail.value = null
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -26,13 +47,21 @@ class PlayerFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         val players = context?.let { PlayerDataSource(it).loadPlayers() }
-        val playerAdapter = players?.let { PlayerAdapter(PlayerAdapter.PlayerClickListener { playerName ->
-            Toast.makeText(context,"$playerName is chosen",Toast.LENGTH_SHORT).show()
+        val playerAdapter = players?.let { PlayerAdapter(PlayerAdapter.PlayerClickListener { player ->
+            Toast.makeText(context,"${player.name} is chosen",Toast.LENGTH_SHORT).show()
+            onPlayerClicked(player)
         }) }
-
 
         recyclerView.adapter = playerAdapter
         playerAdapter?.submitList(players)
+
+        navigateToPlayerDetail.observe(viewLifecycleOwner, Observer { players -> players?.let {
+                this.findNavController().navigate(PlayerFragmentDirections.actionPlayerFragmentToPlayerDetailFragment(it))
+                doneNavigating()
+        } })
+
+
+
 
         playerAdapter?.setOnCheckboxClickListener(object : PlayerAdapter.OnCheckboxClickListener {
             override fun onCheckboxClick(player: Player) {
