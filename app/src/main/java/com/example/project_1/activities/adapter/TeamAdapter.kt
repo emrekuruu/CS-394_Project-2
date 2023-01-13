@@ -37,8 +37,8 @@ class TeamAdapter(var clickListener: TeamClickListener) : ListAdapter<Team, Team
         holder.bind(team,clickListener)
     }
 
-    class TeamClickListener(val clickListener: (team:Team) -> Unit){
-        fun onClick(team : Team) = clickListener(team)
+    class TeamClickListener(val clickListener: (teamName:String) -> Unit){
+        fun onClick(team : Team) = clickListener(team.name)
     }
 
 }

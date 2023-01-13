@@ -4,11 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
-import com.example.project_1.R
-import com.example.project_1.activities.model.Player
 import com.example.project_1.databinding.FragmentPlayerDetailBinding
 
 
@@ -23,9 +21,11 @@ class PlayerDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+
+        var viewModel = ViewModelProvider(this).get(com.example.project_1.activities.ViewModels.PlayerDetailViewModel::class.java)
         binding = FragmentPlayerDetailBinding.inflate(inflater, container, false)
 
-        var player = args.player
+        var player = viewModel.getPlayer(args.playerName,context)
         binding.player =player
 
         return binding.root

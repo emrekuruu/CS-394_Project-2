@@ -23,14 +23,14 @@ import com.example.project_1.databinding.FragmentTeamsBinding
 
 class TeamFragment : Fragment() {
 
-    private val _navigateToTeamDetail = MutableLiveData<Team?>()
+    private val _navigateToTeamDetail = MutableLiveData<String?>()
 
     val navigateToTeamDetail
     get() = _navigateToTeamDetail
 
 
-    fun onTeamClicked(team : Team){
-        _navigateToTeamDetail.value = team
+    fun onTeamClicked(teamName : String){
+        _navigateToTeamDetail.value = teamName
     }
 
     fun doneNavigating(){
@@ -50,9 +50,9 @@ class TeamFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         val teams = context?.let { TeamDataSource(it).loadTeams() }
-        val teamAdapter = teams?.let { TeamAdapter(TeamAdapter.TeamClickListener { team ->
-            Toast.makeText(context?.applicationContext, "${team.name} is chosen", Toast.LENGTH_SHORT).show()
-            onTeamClicked(team)
+        val teamAdapter = teams?.let { TeamAdapter(TeamAdapter.TeamClickListener { teamName ->
+            Toast.makeText(context?.applicationContext, "${teamName} is chosen", Toast.LENGTH_SHORT).show()
+            onTeamClicked(teamName)
         }) }
 
 
@@ -68,9 +68,6 @@ class TeamFragment : Fragment() {
         // Return the inflated layout
         return binding.root
     }
-
-
-
 
 }
 

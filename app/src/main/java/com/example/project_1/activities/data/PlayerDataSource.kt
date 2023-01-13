@@ -24,6 +24,16 @@ class PlayerDataSource(val context: Context) {
         return context.resources.getStringArray(R.array.url_array)
     }
 
+    fun getPlayerByName(name : String) : Player? {
+        val players = loadPlayers()
+        for (player: Player in players) {
+            if (player.name == name) {
+                return player
+            }
+        }
+        return null
+    }
+
     fun loadPlayers() : List<Player>{
         val players = mutableListOf<Player>()
         val nameList = getNames()

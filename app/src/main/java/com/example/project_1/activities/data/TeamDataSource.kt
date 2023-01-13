@@ -18,6 +18,16 @@ class TeamDataSource(val context: Context) {
         return context.resources.getStringArray(R.array.team_urls)
     }
 
+    fun getTeamByName(name : String) : Team?{
+        val teams = loadTeams()
+        for(team : Team in teams){
+            if(team.name == name){
+                return team
+            }
+        }
+        return null
+    }
+
     fun loadTeams():List<Team>{
         val teams = mutableListOf<Team>()
         val names = getNames()

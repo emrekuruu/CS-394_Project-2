@@ -21,13 +21,13 @@ import com.google.android.material.navigation.NavigationView
 
 class PlayerFragment : Fragment() {
 
-    private val _navigateToPlayerDetail = MutableLiveData<Player?>()
+    private val _navigateToPlayerDetail = MutableLiveData<String?>()
 
     val navigateToPlayerDetail
     get() = _navigateToPlayerDetail
 
-    fun onPlayerClicked(player : Player){
-        _navigateToPlayerDetail.value = player
+    fun onPlayerClicked(playerName : String){
+        _navigateToPlayerDetail.value = playerName
     }
 
     fun doneNavigating(){
@@ -47,9 +47,9 @@ class PlayerFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         val players = context?.let { PlayerDataSource(it).loadPlayers() }
-        val playerAdapter = players?.let { PlayerAdapter(PlayerAdapter.PlayerClickListener { player ->
-            Toast.makeText(context,"${player.name} is chosen",Toast.LENGTH_SHORT).show()
-            onPlayerClicked(player)
+        val playerAdapter = players?.let { PlayerAdapter(PlayerAdapter.PlayerClickListener { playerName ->
+            Toast.makeText(context,"${playerName} is chosen",Toast.LENGTH_SHORT).show()
+            onPlayerClicked(playerName)
         }) }
 
         recyclerView.adapter = playerAdapter

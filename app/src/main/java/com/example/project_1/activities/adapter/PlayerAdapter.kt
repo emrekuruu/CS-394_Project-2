@@ -53,8 +53,8 @@ class PlayerAdapter(var clickListener: PlayerClickListener) : ListAdapter<Player
         holder.bind(player,clickListener)
     }
 
-    class PlayerClickListener(val clickListener: (player : Player) -> Unit){
-        fun onClick(player : Player) = clickListener(player)
+    class PlayerClickListener(val clickListener: (playerName : String) -> Unit){
+        fun onClick(player : Player) = clickListener(player.name)
     }
 
 }

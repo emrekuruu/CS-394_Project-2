@@ -41,8 +41,8 @@
         android:label="PlayerDetailFragment"
         tools:layout="@layout/fragment_player_detail">
         <argument
-            android:name="player"
-            app:argType="com.example.project_1.activities.model.Player" />
+            android:name="playerName"
+            app:argType="string" />
     </fragment>
 
     <fragment
@@ -51,7 +51,7 @@
         android:label="TeamDetailFragment"
         tools:layout="@layout/fragment_team_detail">
         <argument
-            android:name="team"
-            app:argType="com.example.project_1.activities.model.Team" />
+            android:name="teamName"
+            app:argType="string" />
     </fragment>
 </navigation>
