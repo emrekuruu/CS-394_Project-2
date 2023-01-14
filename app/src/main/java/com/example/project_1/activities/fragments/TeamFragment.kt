@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +21,7 @@ import com.example.project_1.activities.data.TeamDataSource
 import com.example.project_1.activities.model.Team
 import com.example.project_1.databinding.FragmentPlayersBinding
 import com.example.project_1.databinding.FragmentTeamsBinding
+import kotlinx.coroutines.launch
 
 class TeamFragment : Fragment() {
 
@@ -43,29 +45,36 @@ class TeamFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val binding : FragmentTeamsBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_teams, container, false)
+        val binding : FragmentTeamsBinding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_teams, container, false)
 
         // Initialize the RecyclerView
         val recyclerView: RecyclerView = binding.teamsRecyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        val teams = context?.let { TeamDataSource(it).loadTeams() }
-        val teamAdapter = teams?.let { TeamAdapter(TeamAdapter.TeamClickListener { teamName ->
-            Toast.makeText(context?.applicationContext, "${teamName} is chosen", Toast.LENGTH_SHORT).show()
-            onTeamClicked(teamName)
-        }) }
+        lifecycleScope.launch {
+            val teams = context?.let { TeamDataSource(it).loadTeams() }
+            val teamAdapter = teams?.let {
+                TeamAdapter(TeamAdapter.TeamClickListener { teamName ->
+                    Toast.makeText(context, "${teamName} is chosen", Toast.LENGTH_SHORT).show()
+                    onTeamClicked(teamName)
+                })
+            }
+
+            recyclerView.adapter = teamAdapter
+            teamAdapter?.submitList(teams)
 
 
-        navigateToTeamDetail.observe(viewLifecycleOwner, Observer { teams -> teams?.let {
-            this.findNavController().navigate(TeamFragmentDirections.actionTeamFragmentToTeamDetailFragment(it))
-            doneNavigating()
-        } })
+            navigateToTeamDetail.observe(viewLifecycleOwner, Observer { teams ->
+                teams?.let {
+                    findNavController().navigate(TeamFragmentDirections.actionTeamFragmentToTeamDetailFragment(it))
+                    doneNavigating()
+                }
+            })
 
-        recyclerView.adapter = teamAdapter
-        teamAdapter?.submitList(teams)
 
+        }
 
-        // Return the inflated layout
         return binding.root
     }
 

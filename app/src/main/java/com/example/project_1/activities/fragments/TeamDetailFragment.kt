@@ -6,9 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 
 import com.example.project_1.databinding.FragmentTeamDetailBinding
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class TeamDetailFragment : Fragment() {
 
@@ -20,12 +23,16 @@ class TeamDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
 
         var viewModel = ViewModelProvider(this).get(com.example.project_1.activities.ViewModels.TeamDetailViewModel::class.java)
-
         binding = FragmentTeamDetailBinding.inflate(inflater,container,false)
-        // Inflate the layout for this fragment
-        binding.team = viewModel.getTeam(args.teamName,context)
+
+
+        lifecycleScope.launch {
+            val team = async { viewModel.getTeam(args.teamName, context) }.await()
+            binding.team = team
+        }
 
         return binding.root
     }
