@@ -7,7 +7,7 @@ import com.example.project_1.activities.model.Player
 
 class PlayerDetailViewModel : ViewModel()  {
 
-    fun getPlayer(playerName: String, context: Context?) : Player? {
+    suspend fun getPlayer(playerName: String, context: Context?) : Player? {
         val db = context?.let { PlayerDataSource(it) }
         if (db != null) {
             return db.getPlayerByName(playerName)

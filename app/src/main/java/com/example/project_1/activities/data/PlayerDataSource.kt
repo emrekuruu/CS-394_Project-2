@@ -5,6 +5,9 @@ import android.util.Log
 import com.example.project_1.R
 import com.example.project_1.activities.model.Player
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 
 class PlayerDataSource(val context: Context) {
@@ -12,28 +15,7 @@ class PlayerDataSource(val context: Context) {
     val db = FirebaseFirestore.getInstance()
     val playersRef = db.collection("players_db")
 
-
-
-    fun getNames():Array<String>{
-
-        return context.resources.getStringArray(R.array.name_array)
-    }
-
-    fun getPPG():Array<String>{
-        return context.resources.getStringArray(R.array.ppg_array)
-    }
-    fun getAPG():Array<String>{
-        return context.resources.getStringArray(R.array.apg_array)
-    }
-    fun getRPG():Array<String>{
-        return context.resources.getStringArray(R.array.rpg_array)
-    }
-
-    fun getPhotoUrl():Array<String>{
-        return context.resources.getStringArray(R.array.url_array)
-    }
-
-    fun getPlayerByName(name : String) : Player? {
+    suspend fun getPlayerByName(name : String) : Player? {
         val players = loadPlayers()
         for (player: Player in players) {
             if (player.name == name) {
@@ -43,22 +25,11 @@ class PlayerDataSource(val context: Context) {
         return null
     }
 
-    fun loadPlayers() : List<Player>{
-        val players = mutableListOf<Player>()
-        val nameList = getNames()
-        val ppgs = getPPG()
-        val apgs = getAPG()
-        val rpgs = getRPG()
-        val urls = getPhotoUrl()
-
-
-
-        // benim list bu
-        val playersList = mutableListOf<Player>()
-
-        //burdan liste ekliyom
-        playersRef.get()
-            .addOnSuccessListener { result ->
+    suspend fun loadPlayers(): List<Player> {
+        return withContext(Dispatchers.IO) {
+            val playersList = mutableListOf<Player>()
+            try {
+                val result = playersRef.get().await()
                 for (document in result) {
                     val name = document.getString("name")
                     val APG = document.getString("APG")
@@ -69,7 +40,6 @@ class PlayerDataSource(val context: Context) {
                     val player = Player(name.toString(), PPG.toString(), APG.toString(), RPG.toString(), photoUrl.toString())
                     playersList.add(player)
                 }
-                //Logcate printliyo
                 for (player in playersList) {
                     Log.d("PlayersList", player.name)
                     Log.d("PlayersList", player.APG)
@@ -77,17 +47,10 @@ class PlayerDataSource(val context: Context) {
                     Log.d("PlayersList", player.RPG)
                     Log.d("PlayersList", player.photoUrl)
                 }
+            } catch (e: Exception) {
+                Log.w("Error", "Error getting documents.", e)
             }
-                //error handling
-            .addOnFailureListener { exception ->
-                Log.w("Error", "Error getting documents.", exception)
-            }
-
-
-        for(i in 0..14){
-            val player = Player(nameList[i],ppgs[i],apgs[i],rpgs[i],urls[i])
-            players.add(player)
+            playersList
         }
-        return players
     }
 }

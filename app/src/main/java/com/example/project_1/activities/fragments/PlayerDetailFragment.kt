@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.example.project_1.databinding.FragmentPlayerDetailBinding
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 
 class PlayerDetailFragment : Fragment() {
@@ -20,14 +23,15 @@ class PlayerDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        super.onCreateView(inflater, container, savedInstanceState)
 
         var viewModel = ViewModelProvider(this).get(com.example.project_1.activities.ViewModels.PlayerDetailViewModel::class.java)
         binding = FragmentPlayerDetailBinding.inflate(inflater, container, false)
 
-        var player = viewModel.getPlayer(args.playerName,context)
-        binding.player =player
-
+        lifecycleScope.launch {
+            val player = async { viewModel.getPlayer(args.playerName, context) }.await()
+            binding.player = player
+        }
         return binding.root
     }
 
