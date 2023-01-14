@@ -50,7 +50,38 @@ class PlayerDataSource(val context: Context) {
         val apgs = getAPG()
         val rpgs = getRPG()
         val urls = getPhotoUrl()
-        
+
+
+
+        // benim list bu
+        val playersList = mutableListOf<Player>()
+
+        //burdan liste ekliyom
+        playersRef.get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    val name = document.getString("name")
+                    val APG = document.getString("APG")
+                    val PPG = document.getString("PPG")
+                    val RPG = document.getString("RPG")
+                    val photoUrl = document.getString("photoUrl")
+
+                    val player = Player(name.toString(), PPG.toString(), APG.toString(), RPG.toString(), photoUrl.toString())
+                    playersList.add(player)
+                }
+                //Logcate printliyo
+                for (player in playersList) {
+                    Log.d("PlayersList", player.name)
+                    Log.d("PlayersList", player.APG)
+                    Log.d("PlayersList", player.PPG)
+                    Log.d("PlayersList", player.RPG)
+                    Log.d("PlayersList", player.photoUrl)
+                }
+            }
+                //error handling
+            .addOnFailureListener { exception ->
+                Log.w("Error", "Error getting documents.", exception)
+            }
 
 
         for(i in 0..14){
